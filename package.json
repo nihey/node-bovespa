@@ -1,6 +1,6 @@
 {
   "name": "bovespa",
-  "version": "0.0.0",
+  "version": "0.0.3",
   "description": "Get data from Bovespa's API in a JavaScriptic way",
   "main": "./lib/index.js",
   "scripts": {
