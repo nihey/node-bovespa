@@ -1,8 +1,11 @@
 {
   "name": "bovespa",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Get data from Bovespa's API in a JavaScriptic way",
   "main": "./lib/index.js",
+  "bin": {
+    "bovespa": "./bin/index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,6 +28,7 @@
   "homepage": "https://github.com/nihey/node-bovespa.git",
   "dependencies": {
     "jquery-param": "^0.1.2",
+    "meow": "^3.3.0",
     "node-jquery-deparam": "0.0.3",
     "pixl-xml": "^1.0.4"
   }
