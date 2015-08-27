@@ -7,7 +7,7 @@ var cli = meow({
   pkg: require('../package.json'),
   help: [
     'Usage',
-    '  bovespa [options] <symbol>',
+    '  bovespa <symbol> [options]',
     '',
     'Options:',
     '  -q, --quote      quote status (default option)',
