@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/nihey/node-bovespa.git",
   "dependencies": {
-    "jquery-param": "^0.1.2",
+    "jquery-param": "^0.2.0",
     "meow": "^3.3.0",
     "node-jquery-deparam": "0.0.3",
     "pixl-xml": "^1.0.4"
