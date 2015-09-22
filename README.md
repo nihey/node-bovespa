@@ -16,6 +16,29 @@ JSON/Javascript Objects?
 $ npm install bovespa --save
 ```
 
+# Command Line
+```
+$ bovespa
+
+Get data from Bovespa's API in a JavaScriptic way
+
+  Usage
+    bovespa <symbol> [options]
+
+  Options:
+    -q, --quote      quote status (default option)
+    -v, --volume     traded volume data
+    -t, --trading    daily trading history
+    -s, --stats      bovespa daily status
+
+  Examples:
+
+    bovespa ABEV3
+    bovespa ABEV3 EDGA11B
+    bovespa EDGA11B -t
+    bovespa -s
+```
+
 # Using
 
 Daily trading history of a company/FF ([original](http://www.bmfbovespa.com.br/Pregao-Online/ExecutaAcaoCarregarDadosPapeis.asp?CodDado=EDGA11B))
