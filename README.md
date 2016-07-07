@@ -1,5 +1,7 @@
 # Node Bovespa
 
+## Warning: This module is currently inactive, due to bovespa's original API disappearance. But it will be brought back to you once we can work around that [issue](https://github.com/nihey/node-bovespa/issues/5).
+
 Access Bovespa's Web Service API in a JavaScriptic way.
 
 [![Dependency
@@ -41,7 +43,7 @@ Get data from Bovespa's API in a JavaScriptic way
 
 # Using
 
-Daily trading history of a company/FF ([original](http://www.bmfbovespa.com.br/Pregao-Online/ExecutaAcaoCarregarDadosPapeis.asp?CodDado=EDGA11B))
+Daily trading history of a company ([original](http://www.bmfbovespa.com.br/Pregao-Online/ExecutaAcaoCarregarDadosPapeis.asp?CodDado=EDGA11B))
 ```
 require('bovespa').history('EDGA11B', function(history) {
   console.log(history);
