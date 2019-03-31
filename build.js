@@ -5,6 +5,8 @@ const mkdirp = require("mkdirp");
 const AdmZip = require("adm-zip");
 const readline = require("readline");
 const moment = require("moment");
+const sequelize = require("./lib/db");
+const { Quote } = sequelize;
 
 const download = async function(year) {
   const url = `http://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A${year}.ZIP`;
@@ -48,20 +50,26 @@ const extract = async function(year) {
   const zip = new AdmZip(sourcePath);
 
   console.log("Extracting", year)
-  zip.extractEntryTo(`COTAHIST_A${year}.TXT`, extractedPath, false, true);
-  fs.renameSync(path.join(extractedPath, `COTAHIST_A${year}.TXT`), destinationPath);
+  const entries = zip.getEntries().map(e => e.entryName);
+  [`COTAHIST_A${year}.TXT`, `COTAHIST_A${year}`, `COTAHIST.A${year}`].forEach(filename => {
+    if (!entries.find(f => filename === f)) {
+      return;
+    }
+
+    console.log(filename, extractedPath, entries)
+    zip.extractEntryTo(filename, extractedPath, false, true);
+    fs.renameSync(path.join(extractedPath, filename), destinationPath);
+  })
 }
 
-const parse = async function(year) {
+const parse = async function(year, transaction) {
   const source = path.resolve(__dirname, "_downloaded", "extracted", `A${year}.txt`);
-  const reader = readline.createInterface({
-    input: require("fs").createReadStream(source),
-  });
+  const lines = fs.readFileSync(source, "utf-8").split(/\r?\n/);
 
-  reader.on("line", function(line) {
+  for (const line of lines) {
     // Ignore header and footer
     if (line.slice(0, 2) !== "01") {
-      return;
+      continue
     }
 
     let data = {
@@ -108,38 +116,45 @@ const parse = async function(year) {
       data[attr] = parseInt(data[attr]);
     });
 
-    // Add an alias for the code
-    data.code = data.codneg;
-
     Object.entries(data).forEach(([k, v]) => {
       if (typeof v === "string") {
         data[k] = v.trim();
       }
     });
 
-  });
-
-  return new Promise((resolve, reject) => {
-    reader.on("close", () => resolve(history));
-  });
+    console.log("Parsing:", data.codneg, data.day.format("YYYY-MM-DD"));
+    await Quote.findOrCreate({
+      transaction,
+      where: {codneg: data.codneg, day: data.day},
+      defaults: {
+        ...data,
+      },
+    });
+  }
 };
 
 async function main() {
   const years = [];
-  for (let i = 2018; i < 2019; i++) {
+  for (let i = 2000; i < 2020; i++) {
     years.push(i);
   }
 
-  console.log("Downloading files...");
-  await Promise.all(years.map(year => download(year)));
-  console.log("Done\n");
+  for (const year of years) {
+    console.log("Downloading files...");
+    await download(year);
+    console.log("Done\n");
 
-  console.log("Extracting files...");
-  await Promise.all(years.map(year => extract(year)));
-  console.log("Done\n");
+    console.log("Extracting files...");
+    await extract(year);
+    console.log("Done\n");
 
-  console.log("Parsing files");
-  await Promise.all(years.map(year => parse(year)));
-  console.log("Done\n");
+    console.log("Parsing files");
+    await parse(year);
+    console.log("Done\n");
+  }
+
+  console.log("Finished");
+  sequelize.close();
+  process.exit(0);
 }
 main();
