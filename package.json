@@ -7,6 +7,8 @@
     "bovespa": "./bin/index.js"
   },
   "scripts": {
+    "serve": "fastify start bin/server.js -p 7000 -a 0.0.0.0 -l debug -w",
+    "serve-production": "NODE_ENV=production fastify start bin/server.js -p 7000 -a 0.0.0.0 -l debug",
     "build": "node ./bin/build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,7 +24,7 @@
     "ações"
   ],
   "author": "Nihey Takizawa <nihey.takizawa@gmail.com>",
-  "license": "CC0",
+  "license": "CC0-1.0",
   "bugs": {
     "url": "https://github.com/nihey/node-bovespa.git"
   },
@@ -30,6 +32,8 @@
   "dependencies": {
     "adm-zip": "^0.4.13",
     "axios": "^0.18.0",
+    "fastify": "^2.1.0",
+    "fastify-cli": "^1.0.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
     "pg": "^7.9.0",

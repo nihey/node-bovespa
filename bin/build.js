@@ -79,7 +79,7 @@ const parse = async function(year, transaction) {
     let data = {
       day: line.slice(2, 10),
       codbdi: line.slice(10, 12),
-      codneg: line.slice(12, 24),
+      codneg: line.slice(12, 24).toUpperCase(),
       tpmerc: line.slice(24, 27),
       nomres: line.slice(27, 39),
       especi: line.slice(39, 49),
