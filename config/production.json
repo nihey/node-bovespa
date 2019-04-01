@@ -1,0 +1,9 @@
+{
+  "db": {
+    "database": "bovespa",
+    "user": null,
+    "password": null,
+    "host": "postgresql",
+    "dialect": "postgresql"
+  }
+}
