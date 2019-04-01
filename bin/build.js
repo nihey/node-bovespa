@@ -150,9 +150,14 @@ const parse = async function(year, transaction) {
   }
 
   console.log("Inserting:", year);
-  query += " (" + columns.join(", ") + ") VALUES ";
-  query += rows.map(x => `(${x})`).join(",\n") + ";";
-  await sequelize.query(query);
+  for (let i = 0; (i + 50000) < rows.length; i += 50000) {
+    console.log("Batch", i, i + 50000);
+    const rowSet = rows.slice(i, i + 50000);
+    let raw_query = query;
+    raw_query += " (" + columns.join(", ") + ") VALUES ";
+    raw_query += rowSet.map(x => `(${x})`).join(",\n") + ";";
+    await sequelize.query(raw_query);
+  }
 };
 
 async function main() {
