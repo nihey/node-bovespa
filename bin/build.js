@@ -5,13 +5,13 @@ const mkdirp = require("mkdirp");
 const AdmZip = require("adm-zip");
 const readline = require("readline");
 const moment = require("moment");
-const sequelize = require("./lib/db");
+const sequelize = require("../lib/db");
 const { Quote } = sequelize;
 
 const download = async function(year) {
   const url = `http://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A${year}.ZIP`;
-  mkdirp.sync(path.join(__dirname, "_downloaded", "raw"))
-  const filepath = path.resolve(__dirname, "_downloaded", "raw", `A${year}.zip`);
+  mkdirp.sync(path.join(__dirname, '..', "_downloaded", "raw"))
+  const filepath = path.resolve(__dirname, '..', "_downloaded", "raw", `A${year}.zip`);
 
   // Use cached file, if it exists
   if (fs.existsSync(filepath)) {
@@ -36,10 +36,10 @@ const download = async function(year) {
 }
 
 const extract = async function(year) {
-  const extractedPath = path.resolve(__dirname, "_downloaded", "extracted");
+  const extractedPath = path.resolve(__dirname, '..', "_downloaded", "extracted");
   mkdirp.sync(extractedPath);
-  const sourcePath = path.resolve(__dirname, "_downloaded", "raw", `A${year}.zip`);
-  const destinationPath = path.resolve(__dirname, "_downloaded", "extracted", `A${year}.txt`);
+  const sourcePath = path.resolve(__dirname, '..', "_downloaded", "raw", `A${year}.zip`);
+  const destinationPath = path.resolve(__dirname, '..', "_downloaded", "extracted", `A${year}.txt`);
 
   // Use cached file, if it exists
   if (fs.existsSync(destinationPath)) {
@@ -63,7 +63,7 @@ const extract = async function(year) {
 }
 
 const parse = async function(year, transaction) {
-  const source = path.resolve(__dirname, "_downloaded", "extracted", `A${year}.txt`);
+  const source = path.resolve(__dirname, '..', "_downloaded", "extracted", `A${year}.txt`);
   const lines = fs.readFileSync(source, "utf-8").split(/\r?\n/);
   let query = "INSERT INTO quote "
   let columns;
