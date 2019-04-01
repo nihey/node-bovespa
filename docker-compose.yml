@@ -1,0 +1,25 @@
+version: '3'
+
+volumes:
+    data:
+
+services:
+    postgres:
+        build:
+            context: .
+            dockerfile: DBDockerfile
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_DB: bovespa
+            POSTGRES_PASSOWRD: thisisaveryhardtobreakpasswordmahman123
+            PGDATA: /data/postgres
+        volumes:
+            - data:/data/postgres
+        restart: always
+    bovespa:
+        build: .
+        ports:
+            - 7000:7000
+        depends_on:
+            - postgres
+        restart: always

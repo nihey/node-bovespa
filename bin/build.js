@@ -56,7 +56,6 @@ const extract = async function(year) {
       return;
     }
 
-    console.log(filename, extractedPath, entries)
     zip.extractEntryTo(filename, extractedPath, false, true);
     fs.renameSync(path.join(extractedPath, filename), destinationPath);
   })

@@ -1,0 +1,5 @@
+FROM postgres:11
+
+ENV PGPASSWORD thisisaveryhardtobreakpasswordmahman123
+
+COPY assets/sql/patch-000.sql /docker-entrypoint-initdb.d/init.sql
