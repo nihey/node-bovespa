@@ -65,6 +65,10 @@ const extract = async function(year) {
 const parse = async function(year, transaction) {
   const source = path.resolve(__dirname, "_downloaded", "extracted", `A${year}.txt`);
   const lines = fs.readFileSync(source, "utf-8").split(/\r?\n/);
+  let query = "INSERT INTO quote "
+  let columns;
+  let rows = [];
+  let set = new Set();
 
   for (const line of lines) {
     // Ignore header and footer
@@ -100,6 +104,10 @@ const parse = async function(year, transaction) {
       dismes: line.slice(242, 245),
     };
 
+    if (!columns) {
+      columns = Object.keys(data);
+    }
+
     // Convert dates
     ["day", "datven"].forEach(attr => {
       data[attr] = moment(data[attr], "YYYYMMDD");
@@ -122,20 +130,35 @@ const parse = async function(year, transaction) {
       }
     });
 
-    console.log("Parsing:", data.codneg, data.day.format("YYYY-MM-DD"));
-    await Quote.findOrCreate({
-      transaction,
-      where: {codneg: data.codneg, day: data.day},
-      defaults: {
-        ...data,
-      },
-    });
+    const key = data.day.format("YYYY-MM-DD") + "-" + data.codneg;
+    if (set.has(key)) {
+      console.log("Found Duplicate:", key);
+      continue
+    }
+    set.add(key);
+
+    rows.push(columns.map(column => {
+      const value = data[column];
+      if (typeof value === "string") {
+        return `'${value}'`;
+      }
+      if (value.format) {
+        return value.format("'YYYY-MM-DD'");
+      }
+
+      return value;
+    }));
   }
+
+  console.log("Inserting:", year);
+  query += " (" + columns.join(", ") + ") VALUES ";
+  query += rows.map(x => `(${x})`).join(",\n") + ";";
+  await sequelize.query(query);
 };
 
 async function main() {
   const years = [];
-  for (let i = 2000; i < 2020; i++) {
+  for (let i = 1999; i < 2020; i++) {
     years.push(i);
   }
 
