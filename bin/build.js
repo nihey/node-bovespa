@@ -182,7 +182,7 @@ async function main() {
     let set = new Set();
 
     if (update) {
-      set = await util.get.filled();
+      set = await util.get.filled(moment({y: year}).startOf("year"));
     }
 
     await parse(year, data => {
