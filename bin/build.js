@@ -6,15 +6,44 @@ const AdmZip = require("adm-zip");
 const readline = require("readline");
 const moment = require("moment");
 const sequelize = require("../lib/db");
+const util = require("../lib/util");
 const { Quote } = sequelize;
+const meow = require("meow");
+const cli = meow(`
+  Usage:
+    $ node bin/build.js [Options]
 
-const download = async function(year) {
+    Builds the whole database from scratch (may crash if it was not empty
+    before and you did not use --update)
+
+    Options
+      --update, -u [Default: false] Only update the non-missing data (also forces --no-cache)
+      --no-cache, -n [Default: false] Do not allow cached files to be used
+
+    Examples:
+      $ node bin/build.js
+      $ node bin/build.js --update
+      $ node bin/build.js --no-cache
+`, {
+  flags: {
+    update: {
+      type: "boolean",
+      alias: "u",
+    },
+    'no-cache': {
+      type: "boolean",
+      alias: "n",
+    },
+  },
+});
+
+const download = async function(year, cache) {
   const url = `http://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A${year}.ZIP`;
   mkdirp.sync(path.join(__dirname, '..', "_downloaded", "raw"))
   const filepath = path.resolve(__dirname, '..', "_downloaded", "raw", `A${year}.zip`);
 
   // Use cached file, if it exists
-  if (fs.existsSync(filepath)) {
+  if (fs.existsSync(filepath) && cache) {
     console.log("Using cached", year);
     return;
   }
@@ -35,14 +64,14 @@ const download = async function(year) {
   });
 }
 
-const extract = async function(year) {
+const extract = async function(year, cache) {
   const extractedPath = path.resolve(__dirname, '..', "_downloaded", "extracted");
   mkdirp.sync(extractedPath);
   const sourcePath = path.resolve(__dirname, '..', "_downloaded", "raw", `A${year}.zip`);
   const destinationPath = path.resolve(__dirname, '..', "_downloaded", "extracted", `A${year}.txt`);
 
   // Use cached file, if it exists
-  if (fs.existsSync(destinationPath)) {
+  if (fs.existsSync(destinationPath) && cache) {
     console.log("Using cached", year);
     return;
   }
@@ -61,14 +90,9 @@ const extract = async function(year) {
   })
 }
 
-const parse = async function(year, transaction) {
+const parse = async function(year, func) {
   const source = path.resolve(__dirname, '..', "_downloaded", "extracted", `A${year}.txt`);
   const lines = fs.readFileSync(source, "utf-8").split(/\r?\n/);
-  let query = "INSERT INTO quote "
-  let columns;
-  let rows = [];
-  let set = new Set();
-
   for (const line of lines) {
     // Ignore header and footer
     if (line.slice(0, 2) !== "01") {
@@ -103,10 +127,6 @@ const parse = async function(year, transaction) {
       dismes: line.slice(242, 245),
     };
 
-    if (!columns) {
-      columns = Object.keys(data);
-    }
-
     // Convert dates
     ["day", "datven"].forEach(attr => {
       data[attr] = moment(data[attr], "YYYYMMDD");
@@ -129,54 +149,79 @@ const parse = async function(year, transaction) {
       }
     });
 
-    const key = data.day.format("YYYY-MM-DD") + "-" + data.codneg;
-    if (set.has(key)) {
-      console.log("Found Duplicate:", key);
-      continue
-    }
-    set.add(key);
-
-    rows.push(columns.map(column => {
-      const value = data[column];
-      if (typeof value === "string") {
-        return `'${value}'`;
-      }
-      if (value.format) {
-        return value.format("'YYYY-MM-DD'");
-      }
-
-      return value;
-    }));
-  }
-
-  console.log("Inserting:", year);
-  for (let i = 0; (i + 50000) < rows.length; i += 50000) {
-    console.log("Batch", i, i + 50000);
-    const rowSet = rows.slice(i, i + 50000);
-    let raw_query = query;
-    raw_query += " (" + columns.join(", ") + ") VALUES ";
-    raw_query += rowSet.map(x => `(${x})`).join(",\n") + ";";
-    await sequelize.query(raw_query);
+    func(data);
   }
 };
 
 async function main() {
-  const years = [];
+  const update = cli.flags.update;
+  const cache = !cli.flags.n && !update;
+
+  let years = [];
   for (let i = 1999; i < 2020; i++) {
     years.push(i);
   }
 
+  if (update) {
+    years = [moment().format("YYYY")];
+  }
+
   for (const year of years) {
     console.log("Downloading files...");
-    await download(year);
+    await download(year, cache);
     console.log("Done\n");
 
     console.log("Extracting files...");
-    await extract(year);
+    await extract(year, cache);
     console.log("Done\n");
 
     console.log("Parsing files");
-    await parse(year);
+    let query = "INSERT INTO quote "
+    let columns;
+    let rows = [];
+    let set = new Set();
+
+    if (update) {
+      set = await util.get.filled();
+    }
+
+    await parse(year, data => {
+      if (!columns) {
+        columns = Object.keys(data);
+      }
+
+      const key = data.day.format("YYYY-MM-DD") + "-" + data.codneg;
+      if (set.has(key)) {
+        return;
+      }
+
+      console.log("Added:", key);
+      set.add(key);
+
+      rows.push(columns.map(column => {
+        const value = data[column];
+        if (typeof value === "string") {
+          return `'${value}'`;
+        }
+        if (value.format) {
+          return value.format("'YYYY-MM-DD'");
+        }
+
+        return value;
+      }));
+    });
+
+    console.log("Inserting:", year);
+    console.log("Rows to go:", rows.length);
+    for (let i = 0; i < rows.length; i += 50000) {
+      console.log("Batch", i, i + 50000);
+      const rowSet = rows.slice(i, i + 50000);
+      let raw_query = query;
+      raw_query += " (" + columns.join(", ") + ") VALUES ";
+      raw_query += rowSet.map(x => `(${x})`).join(",\n") + ";";
+      await sequelize.query(raw_query);
+    }
+
     console.log("Done\n");
   }
 
@@ -184,4 +229,7 @@ async function main() {
   sequelize.close();
   process.exit(0);
 }
-main();
+
+if (require.main === module) {
+  main();
+}
