@@ -11,7 +11,8 @@
     "serve-production": "NODE_ENV=production fastify start bin/server.js -p 7000 -a 0.0.0.0 -l debug",
     "build": "node ./bin/build.js",
     "update": "node ./bin/build.js --update",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint bin/* lib/ --fix",
+    "test": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -42,5 +43,13 @@
     "pg": "^7.9.0",
     "pg-hstore": "^2.3.2",
     "sequelize": "^5.2.7"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.1.1",
+    "eslint-plugin-standard": "^4.0.0"
   }
 }
