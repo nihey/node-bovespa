@@ -10,6 +10,7 @@
     "serve": "fastify start bin/server.js -p 7000 -a 0.0.0.0 -l debug -w",
     "serve-production": "NODE_ENV=production fastify start bin/server.js -p 7000 -a 0.0.0.0 -l debug",
     "build": "node ./bin/build.js",
+    "update": "node ./bin/build.js --update",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -18,6 +18,8 @@ services:
         restart: always
     bovespa:
         build: .
+        environment:
+            NODE_ENV: production
         ports:
             - 7000:7000
         depends_on:

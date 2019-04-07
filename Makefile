@@ -1,6 +1,6 @@
 rebuild:
-	docker-compose build bovespa
-	docker-compose up -d
+	docker-compose build
+	docker-compose up -d --remove-orphans
 
 reload:
 	docker-compose up -d

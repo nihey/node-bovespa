@@ -1,0 +1,1 @@
+10 2 * * 1-6 NODE_ENV=production npm run update >> /var/log/updater.log
