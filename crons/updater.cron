@@ -1,1 +1,3 @@
-10 2 * * 1-6 NODE_ENV=production npm run update >> /var/log/updater.log
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+NODE_ENV=production
+0 18-23,0-5 * * 1-6 cd /var/www && npm run update >> /var/log/updater.log 2>&1
