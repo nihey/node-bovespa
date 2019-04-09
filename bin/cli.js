@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const config = require('config')
 const meow = require('meow')
 const moment = require('moment')
@@ -39,6 +41,10 @@ async function main () {
   const codes = cli.input
   const date = cli.flags.date
   const api = cli.flags.api
+
+  if (codes.length === 0) {
+    cli.showHelp()
+  }
 
   for (const code of codes) {
     const getQuote = bovespa(api)

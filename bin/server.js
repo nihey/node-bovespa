@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const moment = require('moment')
 const sequelize = require('../lib/db')
 const { Quote } = sequelize
