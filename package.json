@@ -1,10 +1,10 @@
 {
   "name": "bovespa",
   "version": "0.1.0",
-  "description": "Recover Bovespa's data freely",
+  "description": "Bovespa data extractor, server, and command line interface",
   "main": "./lib/index.js",
   "bin": {
-    "bovespa": "./bin/index.js"
+    "bovespa": "./bin/cli.js"
   },
   "scripts": {
     "serve": "fastify start bin/server.js -p 7000 -a 0.0.0.0 -l debug -w",
@@ -34,6 +34,7 @@
   "dependencies": {
     "adm-zip": "^0.4.13",
     "axios": "^0.18.0",
+    "chalk": "^2.4.2",
     "config": "^3.0.1",
     "fastify": "^2.1.0",
     "fastify-cli": "^1.0.0",
