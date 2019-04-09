@@ -1,5 +1,4 @@
 {
-  "api": "https://bovespa.nihey.page",
   "db": {
     "database": "bovespa",
     "user": null,

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const config = require('config')
 const meow = require('meow')
 const moment = require('moment')
 const bovespa = require('../lib')
@@ -32,7 +31,7 @@ const cli = meow(`
     api: {
       type: 'string',
       alias: 'a',
-      default: config.api
+      default: process.env.BOVESPA_API || 'https://bovespa.nihey.page'
     }
   }
 })
