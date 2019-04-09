@@ -2,7 +2,7 @@
 
 const meow = require('meow')
 const moment = require('moment')
-const bovespa = require('../lib')
+const bovespa = require('../lib/index')
 const { formatters } = require('../lib/util')
 const chalk = require('chalk')
 const { bold, green, red } = chalk
