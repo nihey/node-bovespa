@@ -14,13 +14,16 @@ const cli = meow(`
     Extracts data from bovespa and displays it on the terminal
 
     Options
-      --date, -d <YYYY-MM-DD> [Default: Today] Which date to extract the data from
+      --date, -d <YYYY-MM-DD or int> [Default: Today] Which date to extract the data from or days relative to today
       --api, -a <API URL> [Default 'https://bovespa.nihey.page']
 
     Examples:
       $ bovespa ABEV3
       $ bovespa ABEV3 --date 2019-04-01
       $ bovespa ABEV3 PETR4 BIDI4 --date 2019-04-01
+
+      # Get data from yesterday
+      $ bovespa ABEV3 PETR4 BIDI4 --date -1
 `, {
   flags: {
     date: {
@@ -38,7 +41,7 @@ const cli = meow(`
 
 async function main () {
   const codes = cli.input
-  const date = cli.flags.date
+  let date = cli.flags.date
   const api = cli.flags.api
 
   if (codes.length === 0) {
@@ -49,6 +52,11 @@ async function main () {
     const getQuote = bovespa(api)
     let data
     try {
+      const intDate = parseInt(date, 10)
+      if (intDate <= 0) {
+        date = moment().add(intDate, 'days').format('YYYY-MM-DD')
+      }
+
       data = await getQuote(code, date)
     } catch (e) {
       if (e.response.status === 404) {
