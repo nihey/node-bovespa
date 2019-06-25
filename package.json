@@ -9,8 +9,8 @@
   "scripts": {
     "serve": "fastify start bin/server.js -p 7000 -a 0.0.0.0 -l debug -w",
     "serve-production": "NODE_ENV=production fastify start bin/server.js -p 7000 -a 0.0.0.0 -l debug",
-    "build": "node ./bin/build.js",
-    "update": "node ./bin/build.js --update",
+    "build": "node --max-old-space-size=8192 ./bin/build.js",
+    "update": "node --max-old-space-size=8192 ./bin/build.js --update",
     "lint": "eslint bin/* lib/ --fix",
     "test": "npm run lint"
   },
