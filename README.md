@@ -110,7 +110,7 @@ $ bovespa --help
 
     Options
       --date, -d <YYYY-MM-DD> [Default: Today] Which date to extract the data from
-      --api, -a <API URL> [Default 'https://bovespa.nihey.page']
+      --api, -a <API URL> [Default 'https://bovespa.nihey.org']
 
     Examples:
       $ bovespa ABEV3

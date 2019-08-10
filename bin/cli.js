@@ -15,7 +15,7 @@ const cli = meow(`
 
     Options
       --date, -d <YYYY-MM-DD or int> [Default: Today] Which date to extract the data from or days relative to today
-      --api, -a <API URL> [Default 'https://bovespa.nihey.page']
+      --api, -a <API URL> [Default 'https://bovespa.nihey.org']
 
     Examples:
       $ bovespa ABEV3
@@ -34,7 +34,7 @@ const cli = meow(`
     api: {
       type: 'string',
       alias: 'a',
-      default: process.env.BOVESPA_API || 'https://bovespa.nihey.page'
+      default: process.env.BOVESPA_API || 'https://bovespa.nihey.org'
     }
   }
 })
@@ -57,7 +57,19 @@ async function main () {
         date = moment().add(intDate, 'days').format('YYYY-MM-DD')
       }
 
-      data = await getQuote(code, date)
+      if (moment(date).isSame(moment(), 'day')) {
+        data = await getQuote.intraday(code)
+        data = {
+          codneg: data.code,
+          preult: data.price,
+          preabe: data.priceopen,
+          premed: null,
+          premax: data.high,
+          premin: data.low
+        }
+      } else {
+        data = await getQuote(code, date)
+      }
     } catch (e) {
       if (e.response.status === 404) {
         console.log(chalk`CODE: ${red(bold(code))} @ ${red(bold(date))}`)

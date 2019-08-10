@@ -28,6 +28,7 @@ module.exports = async (fastify, options) => {
       'datadelay',
       'volumeavg',
       'volume',
+      'closeyest',
       'tradetime'
     ]
     attrs.forEach(attr => {
