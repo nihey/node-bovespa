@@ -10,6 +10,8 @@
     "serve": "fastify start bin/server.js -p 7000 -a 0.0.0.0 -l debug -w",
     "serve-production": "NODE_ENV=production fastify start bin/server.js -p 7000 -a 0.0.0.0 -l debug",
     "build": "node --max-old-space-size=8192 ./bin/build.js",
+    "intraday-reset": "node --max-old-space-size=8192 ./bin/intraday-reset.js",
+    "intraday-sync": "node --max-old-space-size=8192 ./bin/intraday-sync.js",
     "update": "node --max-old-space-size=8192 ./bin/build.js --update",
     "lint": "eslint bin/* lib/ --fix",
     "test": "npm run lint"

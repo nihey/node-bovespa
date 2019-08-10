@@ -1,3 +1,5 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 NODE_ENV=production
 0 18-23,0-5 * * 1-6 cd /var/www && npm run update >> /var/log/updater.log 2>&1
+30 5 * * 1-5 cd /var/www && npm run intraday-reset >> /var/log/id-reset.log 2>&1
+*/10 9-18 * * 1-5 cd /var/www && npm run intraday-sync >> /var/log/id-sync.log 2>&1
