@@ -17,7 +17,7 @@ const main = async () => {
   const quotes = data.map(d => {
     Object.entries(d).forEach(([k, v]) => {
       if (k === 'tradetime') {
-        d[k] = moment.utc(v, 'DD/MM/YYYY HH:mm:ss').toDate()
+        d[k] = moment(v, 'DD/MM/YYYY HH:mm:ss').toDate() || null
       } else if (['currency', 'code'].find(attr => k === attr)) {
         d[k] = v
       } else {
@@ -29,10 +29,14 @@ const main = async () => {
   })
 
   for (const quote of quotes) {
+    if (!quote.tradetime) {
+      continue
+    }
+
     console.log('Inserting', quote.code)
     IntraDay.upsert({
       ...quote,
-      day: new Date()
+      day: quote.tradetime
     })
   }
   console.log('Syncing...')
