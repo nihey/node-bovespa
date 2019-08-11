@@ -16,6 +16,9 @@ services:
         volumes:
             - data:/data/postgres
         restart: always
+        logging:
+            options:
+                max-size: "50m"
     bovespa:
         build: .
         environment:
@@ -25,3 +28,6 @@ services:
         depends_on:
             - postgres
         restart: always
+        logging:
+            options:
+                max-size: "50m"
