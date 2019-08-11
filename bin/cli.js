@@ -59,6 +59,13 @@ async function main () {
 
       if (moment(date).isSame(moment(), 'day')) {
         data = await getQuote.realtime(code)
+
+        if (!moment(data.day).isSame(date, 'day')) {
+          const error = new Error()
+          error.response = { status: 404 }
+          throw error
+        }
+
         data = {
           codneg: data.code,
           preult: data.price,
@@ -89,7 +96,9 @@ async function main () {
     console.log(chalk`Variation: ${color(formatters.percentage((data.preult - data.preabe) / data.preult))}`)
     console.log(chalk`Opening: ${color(data.preabe)}`)
     console.log(chalk`Closing: ${color(data.preult)}`)
-    console.log(chalk`Average: ${color(data.premed)}`)
+    if (data.premed) {
+      console.log(chalk`Average: ${color(data.premed)}`)
+    }
     console.log(chalk`Max: ${color(data.premax)}`)
     console.log(chalk`Min: ${color(data.premin)}`)
     console.log('')
