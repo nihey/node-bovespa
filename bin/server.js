@@ -2,11 +2,11 @@
 
 const moment = require('moment')
 const sequelize = require('../lib/db')
-const { Quote, IntraDay } = sequelize
+const { Quote, Realtime } = sequelize
 
 module.exports = async (fastify, options) => {
   const getMaxDate = async () => {
-    const response = await sequelize.query('SELECT MAX(day) FROM intraday;')
+    const response = await sequelize.query('SELECT MAX(day) FROM realtime;')
     if (!response[0].length) {
       return null
     }
@@ -14,7 +14,7 @@ module.exports = async (fastify, options) => {
     return response[0][0].max
   }
 
-  const intradayMap = (d) => {
+  const realtimeMap = (d) => {
     const returned = {}
     const attrs = [
       'day',
@@ -37,20 +37,20 @@ module.exports = async (fastify, options) => {
 
     return returned
   }
-  const intradayFilter = (d) => d.price
+  const realtimeFilter = (d) => d.price
 
-  fastify.get('/api/intraday', async (request, reply) => {
-    const data = await IntraDay.findAll({
+  fastify.get('/api/realtime', async (request, reply) => {
+    const data = await Realtime.findAll({
       where: {
         day: moment(await getMaxDate()).toDate()
       }
     })
 
-    return data.map(intradayMap).filter(intradayFilter)
+    return data.map(realtimeMap).filter(realtimeFilter)
   })
 
-  fastify.get('/api/intraday/:code', async (request, reply) => {
-    const data = await IntraDay.findOne({
+  fastify.get('/api/realtime/:code', async (request, reply) => {
+    const data = await Realtime.findOne({
       where: {
         code: request.params.code.toUpperCase(),
         day: moment(await getMaxDate()).toDate()
@@ -64,7 +64,7 @@ module.exports = async (fastify, options) => {
       }
     }
 
-    return intradayMap(data.dataValues)
+    return realtimeMap(data.dataValues)
   })
 
   fastify.get('/api/quote/:code/:date', async (request, reply) => {

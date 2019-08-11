@@ -2,7 +2,7 @@ const config = require('config')
 const axios = require('axios')
 const moment = require('moment')
 const db = require('../lib/db')
-const { IntraDay } = require('../lib/db')
+const { Realtime } = require('../lib/db')
 
 const main = async () => {
   await db.sync()
@@ -34,7 +34,7 @@ const main = async () => {
     }
 
     console.log('Inserting', quote.code)
-    IntraDay.upsert({
+    Realtime.upsert({
       ...quote,
       day: quote.tradetime
     })

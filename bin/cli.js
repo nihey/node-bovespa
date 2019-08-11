@@ -58,7 +58,7 @@ async function main () {
       }
 
       if (moment(date).isSame(moment(), 'day')) {
-        data = await getQuote.intraday(code)
+        data = await getQuote.realtime(code)
         data = {
           codneg: data.code,
           preult: data.price,
