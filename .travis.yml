@@ -1,4 +1,12 @@
 language: node_js
 node_js:
-  - "node"
-  - "lts/*"
+  - node
+  - lts/*
+deploy:
+  provider: npm
+  email: nihey.takizawa@gmail.com
+  api_key:
+    secure: rZXu6WuGcsh9Ap/B+GzkQYXYze5MFTDxDTppSP7VXHKDKgF7rEcpAkmsp9gY66R61o/H+wandgMVF0DQSLq6C7p+DW4iQzCyfRThSNDnIemQyy5tLJFVQiVXrMvl7NQooUI6H9eh1+ZjJLJoGgYSXUlVczjRQLphdB0jEw5waGbMHGpNq435ILowo/qe7Q7QyNIFMdYlNphWhtHOLUJifbJfDDJuI4HlYKv76q73+EuEiPm/8WT+uPgR2/sB8T9kv7cQZb0Iwaw5rqfZS8SHInHceZjQ7NgvQx8Py6t16Y8uHcKeWAujGhMJBQ4hY8Q0w5qVm3OZQAy1erTK30sfAqP7KqqK2/H4o5fEVZGcx8V/T9N5ZJflC4O0G20NrCC2jZOq/BMC4l6S1X5Gf9lUnY69E5spabA+66bpoxIpp9FS3DckV4nFhy37gu0R0EtlWO+ZQEDMV+U7XoHpK5lGkGo/hYYC5gZDvh/fHKzaGbhPuKYpOs6DaySGes1pmySWQ62I8FHszQEmovn/mXHCb3Thi8+pVjOhxl0VPbjlXrxRTM/554LFH3vO60/982+KoUFGtcuQsyR3BeGHCbfeofxoNRgcQotbz3qzzXYBq57sFJ7qppfN1W4dAIHGA4enaZwLmatvc7AElIbFaPsTTh00kZROdjDbZLo0eHD7weQ=
+  on:
+    tags: true
+    repo: nihey/node-bovespa
