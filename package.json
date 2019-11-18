@@ -1,6 +1,6 @@
 {
   "name": "bovespa",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Bovespa data extractor, server, and command line interface",
   "main": "./lib/index.js",
   "bin": {
