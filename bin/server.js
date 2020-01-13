@@ -2,9 +2,16 @@
 
 const moment = require('moment')
 const sequelize = require('../lib/db')
+const fastifyCors = require('fastify-cors')
 const { Quote, Realtime } = sequelize
 
 module.exports = async (fastify, options) => {
+  fastify.register(fastifyCors, {
+    origin: '*',
+    methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: false
+  })
+
   const getMaxDate = async () => {
     const response = await sequelize.query('SELECT MAX(day) FROM realtime;')
     if (!response[0].length) {
