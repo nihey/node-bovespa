@@ -85,6 +85,10 @@ bovespa("ABEV3", "2018-04-23").then(console.log);
 // }
 ```
 
+The name of the fields are the same expressed on the ones shown on B3's
+official archives. You can have a reference on what they mean by going to
+[this link](http://bvmf.bmfbovespa.com.br/pt-br/download/SeriesHistoricas_Layout.pdf)
+
 You can use a different server to fetch data from your own API too:
 ```javascript
 const bovespa = require("bovespa")("https://<your own api here>");
